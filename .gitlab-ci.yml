@@ -18,14 +18,14 @@ variables:
 
 stages:
   - build
-  - test
   - uat
+  - test
   - prod
 
 build:
   stage: build
   tags:
-    - qs1
+    - ec2
   script:
     - echo "\nBuilding"
     - mvn $MAVEN_CLI_OPTS compile verify
@@ -36,10 +36,19 @@ build:
       --header "Content-Type: application/json" --request POST \
       "https://admin:S3aml35511@$INSTANCE/api/sn_devops/v1/devops/artifact/registration?orchestrationToolId=$TOOLID"
     - echo "Status- $?"
+
+uat:
+  stage: uat
+  tags:
+    - ec2
+  script:
+    - echo "Deploy to UAT"
+    
+
 test:
   stage: test
   tags:
-    - qs1
+    - ec2
   script:
     - echo "Testing"
     - mvn $MAVEN_CLI_OPTS test
@@ -51,16 +60,10 @@ test:
         --request POST \
         "https://admin:S3aml35511@$INSTANCE/api/sn_devops/v1/devops/package/registration?orchestrationToolId=$TOOLID"
     - echo "Status- $?"
-uat:
-  stage: uat
-  tags:
-    - qs1
-  script:
-    - echo "Deploy to UAT"
 prod:
   stage: prod
   tags:
-    - qs1
+    - ec2
   script:
     - echo "Deploy in Production"
   when: manual
