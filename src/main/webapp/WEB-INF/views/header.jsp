@@ -47,10 +47,10 @@
                                     </a>
                                     <ul>
                                         <li>
-                                            <a href="#">Cypress Hill</a>
+                                            <a href="#">Cypress Creek</a>
                                         </li>
                                         <li>
-                                            <a href="#">Secret Mountain Part 2</a>
+                                            <a href="#">Secret Mountain</a>
                                         </li>
                                
                                     </ul>
