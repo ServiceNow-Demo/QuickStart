@@ -1,0 +1,67 @@
+image: maven:latest
+
+cache:
+  key: "$CI_PIPELINE_ID"
+  paths:
+    - ./target
+
+variables:
+  DURATION: 20
+  MAVEN_CLI_OPTS: ""    #-s .m2/settings.xml --batch-mode"
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  INSTANCE: "devopsquickstart.service-now.com"
+  TOOLID: "a7a94263db2a1810039556a4dc961941"
+  REPONAME: "globexrepo1"
+  ARTNAME: "globex-web.war"
+  ARTVERSION: "3.0.${CI_PIPELINE_ID}"
+  COMPANY: "globex"
+
+stages:
+  - build
+  - test
+  - uat
+  - prod
+
+build:
+  stage: build
+  tags:
+    - qs1
+  script:
+    - echo "\nBuilding"
+    - mvn $MAVEN_CLI_OPTS compile verify
+    - echo "Registering artifact"
+    - |
+      curl --fail --output "/dev/null" --silent --show-error --write-out "HTTP response: ${http_code}\n\n" \
+      --data "{\"artifacts\" : [ { \"name\": \"$ARTNAME\", \"repositoryName\": \"$REPONAME\", \"version\": \"$ARTVERSION\", \"semanticVersion\": \"$ARTVERSION\"} ], \"projectName\": \"${CI_PROJECT_TITLE}#${CI_JOB_NAME}\", \"taskExecutionNumber\": \"${CI_JOB_ID}\" }" \
+      --header "Content-Type: application/json" --request POST \
+      "https://admin:S3aml35511@$INSTANCE/api/sn_devops/v1/devops/artifact/registration?orchestrationToolId=$TOOLID"
+    - echo "Status- $?"
+test:
+  stage: test
+  tags:
+    - qs1
+  script:
+    - echo "Testing"
+    - mvn $MAVEN_CLI_OPTS test
+    - echo "Register package"
+    - |
+      curl -i \
+        --data "{\"artifacts\": [ { \"name\": \"$ARTNAME\", \"repositoryName\": \"$REPONAME\", \"version\": \"$ARTVERSION\" } ], \"projectName\": \"${CI_PROJECT_TITLE}#${CI_JOB_NAME}\", \"taskExecutionNumber\": \"${CI_JOB_ID}\", \"name\": \"${COMPANY}_Globex\" }" \
+        --header "Content-Type: application/json" \
+        --request POST \
+        "https://admin:S3aml35511@$INSTANCE/api/sn_devops/v1/devops/package/registration?orchestrationToolId=$TOOLID"
+    - echo "Status- $?"
+uat:
+  stage: uat
+  tags:
+    - qs1
+  script:
+    - echo "Deploy to UAT"
+prod:
+  stage: prod
+  tags:
+    - qs1
+  script:
+    - echo "Deploy in Production"
+  when: manual
+  allow_failure: false
