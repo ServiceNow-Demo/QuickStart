@@ -25,7 +25,7 @@ stages:
 build:
   stage: build
   tags:
-    - qs1
+    - qs2
   script:
     - echo "\nBuilding"
     - mvn $MAVEN_CLI_OPTS compile verify
@@ -40,7 +40,7 @@ build:
 uat:
   stage: uat
   tags:
-    - qs1
+    - qs2
   script:
     - echo "Deploy to UAT"
     
@@ -48,7 +48,7 @@ uat:
 test:
   stage: test
   tags:
-    - qs1
+    - qs2
   script:
     - echo "Testing"
     - mvn $MAVEN_CLI_OPTS test
@@ -63,7 +63,7 @@ test:
 prod:
   stage: prod
   tags:
-    - qs1
+    - qs2
   script:
     - echo "Deploy in Production"
   when: manual
