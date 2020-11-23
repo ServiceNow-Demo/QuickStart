@@ -20,3 +20,16 @@ steps:
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
+- task: CopyFilesOverSSH@0
+  inputs:
+    sshEndpoint: 'globex_server'
+    contents: '**'
+    targetFolder: '/var/tmp'
+    readyTimeout: '20000'
+- task: CopyFilesOverSSH@0
+  displayName: 3.23.165.149
+  inputs:
+    sshEndpoint: 'AWS Tomcat SSH Connection'
+    sourceFolder: target
+    contents: '*.war'
+    targetFolder: /var/tmp
