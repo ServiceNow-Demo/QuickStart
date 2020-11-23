@@ -10,8 +10,8 @@ trigger:
 name: $(BuildDefinitionName).$(BuildID)
 variables:
   System.Debug: true
-  connection: "<your SNOW connection>"
-  tooldId: "<your tool id>"
+  connection: "snow_devops"
+  tooldId: "e08d4c2f1b6c6010274fbb751a4bcbe5"
 
 stages:
 - stage: 'Build'
@@ -161,7 +161,7 @@ stages:
 
     - task: CopyFilesOverSSH@0
       inputs:
-        sshEndpoint: '<your tomcat connection>'
+        sshEndpoint: 'globex_tomcat'
         sourceFolder: '$(System.ArtifactsDirectory)/globex'
         contents: '*.war'
         targetFolder: '/opt/tomcat/webapps'
