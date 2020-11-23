@@ -10,7 +10,7 @@ trigger:
 name: $(BuildDefinitionName).$(BuildID)
 variables:
   System.Debug: true
-  connection: "lrochette1"
+  connection: "snow_devops"
   tooldId: "55fd373f1be314101afa520d0a4bcb2a"
 
 stages:
@@ -161,7 +161,7 @@ stages:
 
     - task: CopyFilesOverSSH@0
       inputs:
-        sshEndpoint: 'PROD'
+        sshEndpoint: 'globex_tomcat'
         sourceFolder: '$(System.ArtifactsDirectory)/corpsite'
         contents: '*.war'
         targetFolder: '/opt/tomcat/webapps'
