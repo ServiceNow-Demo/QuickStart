@@ -81,7 +81,9 @@ stages:
   jobs:
   - job: 'Change'
     steps:
-
+- task: ServiceNow-DevOps-Server-Change-Acceleration@1
+  inputs:
+    connectedServiceName: 'snow_devops'
 
 
 - stage: 'Prod'
