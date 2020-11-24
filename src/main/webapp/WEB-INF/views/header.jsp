@@ -17,7 +17,7 @@
 
     <body class="btn-rounded scroll-assist">
         <div class="nav-container">
-            <nav class="bg-light absolute transparent">
+            <nav class="bg-light">
                 <div class="nav-bar">
                     <div class="module left">
                         <a href="/">
