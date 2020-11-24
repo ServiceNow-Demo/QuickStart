@@ -144,6 +144,6 @@ stages:
         sshEndpoint: '$(sshconnection)'
         sourceFolder: '$(System.ArtifactsDirectory)/globex'
         contents: '*.war'
-        targetFolder: '/opt/tomcat/webapps'
+        targetFolder: '/var/lib/tomcat9/webapps'
         overwrite: true
         preserveTimestamp: true
