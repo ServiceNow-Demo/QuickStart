@@ -2,7 +2,7 @@
 <jsp:include page="header.jsp"/>
 
 	<div class="main-container">
-		<section class="cover fullscreen image-slider slider-arrow-controls controls-inside parallax background-multiply">
+		<section class="cover fullscreen image-slider slider-arrow-controls controls-inside parallax">
 			<ul class="slides">
 				<li class="overlay image-bg">
 					<div class="background-image-holder">
@@ -11,7 +11,7 @@
 					<div class="container v-align-transform">
 						<div class="row">
 							<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 text-center">
-								<img alt="Logo" class="image-small mb8" src="resources/img/logo-light.png">
+								
 						
 							</div>
 						</div>
