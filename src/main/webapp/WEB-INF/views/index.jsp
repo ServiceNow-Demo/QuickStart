@@ -4,14 +4,14 @@
 	<div class="main-container">
 		<section class="cover fullscreen image-slider slider-arrow-controls controls-inside parallax">
 			<ul class="slides">
-				<li class="overlay image-bg">
+				<li class="image-bg">
 					<div class="background-image-holder">
 						<img alt="image" class="background-image" src="resources/img/buildings1.jpg">
 					</div>
 					<div class="container v-align-transform">
 						<div class="row">
 							<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 text-center">
-								
+								Globex Pet Clinic
 						
 							</div>
 						</div>
