@@ -951,11 +951,11 @@ nav.bg-dark .logo-dark {
   width: auto;
 }
 .menu li a {
-  font-size: 11px;
+  font-size: 13px;
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 1px;
-  color: #292929;
+  color: #000;
   opacity: 0.5;
   transition: all 0.3s ease;
   -webkit-transition: all 0.3s ease;
