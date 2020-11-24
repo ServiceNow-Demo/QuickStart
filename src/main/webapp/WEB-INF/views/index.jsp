@@ -11,7 +11,7 @@
 					<div class="container v-align-transform">
 						<div class="row">
 							<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 text-center">
-								<h1>Globex Pet Clinic</h1>
+								<h1 style="color:black">Globex Pet Clinic</h1>
 						
 							</div>
 						</div>
