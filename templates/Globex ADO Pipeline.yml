@@ -89,14 +89,6 @@ stages:
         artifactName: 'globex'
         downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: 'UAT'
-        sourceFolder: '$(System.ArtifactsDirectory)/globex'
-        contents: '*.war'
-        targetFolder: '/opt/tomcat/webapps'
-        overwrite: true
-        preserveTimestamp: true
 
 - stage: 'Prod'
   jobs:
