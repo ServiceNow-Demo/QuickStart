@@ -11,6 +11,7 @@ name: Globex ADO Pipeline
 variables:
   System.Debug: true
   connection: "<your SNOW connection>"
+  sshconnection: "<your SSH connection>"
   tooldId: "<your tool id>"
 
 stages:
@@ -83,7 +84,7 @@ stages:
     steps:
 - task: ServiceNow-DevOps-Server-Change-Acceleration@1
   inputs:
-    connectedServiceName: 'snow_devops'
+    connectedServiceName: '$(connection)'
 
 
 - stage: 'Prod'
@@ -148,7 +149,7 @@ stages:
 
     - task: CopyFilesOverSSH@0
       inputs:
-        sshEndpoint: 'globex_tomcat'
+        sshEndpoint: '$(sshconnection)'
         sourceFolder: '$(System.ArtifactsDirectory)/globex'
         contents: '*.war'
         targetFolder: '/opt/tomcat/webapps'
