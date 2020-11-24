@@ -17,14 +17,13 @@
 
     <body class="btn-rounded scroll-assist">
         <div class="nav-container">
-            <nav class="bg-dark absolute transparent">
+            <nav class="bg-light absolute transparent">
                 <div class="nav-bar">
                     <div class="module left">
                         <a href="/">
                             <img class="logo logo-light" alt="Globex Corporation" src="resources/img/logo-light.png">
                             <img class="logo logo-dark" alt="Globex Corporation" src="resources/img/logo-dark.png">
                         </a>
-                        <span> - ${msg}</span>
                     </div>
                     <div class="module widget-handle mobile-toggle right visible-sm visible-xs">
                         <i class="ti-menu"></i>
