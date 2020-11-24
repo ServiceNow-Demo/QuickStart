@@ -10,9 +10,9 @@ trigger:
 name: $(BuildDefinitionName).$(BuildID)
 variables:
   System.Debug: true
-  connection: "<your SNOW connection>"
-  sshconnection: "<your SSH connection>"
-  tooldId: "<your tool id>"
+  connection: "snow_devops"
+  sshconnection: "globex_tomcat"
+  tooldId: "e08d4c2f1b6c6010274fbb751a4bcbe5"
 
 stages:
 - stage: 'Build'
