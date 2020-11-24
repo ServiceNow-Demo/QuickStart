@@ -118,26 +118,25 @@ stages:
               "stageName":"$(system.jobDisplayName)",
               "branchName":"$(build.sourceBranchName)"
           }
+- task: ServiceNow-DevOps-Server-Artifact-Registration@1
+  inputs:
+    connectedServiceName: 'snow_devops'
+    artifactRegistrationPayload: |
+      {
+         "artifacts": [
+            {
+               "name": "globex-web.war",
+               "version": "1.$(build.buildId)",
+               "semanticVersion": "1.$(build.buildId).0",
+               "repositoryName": "globex-ADO"
+            }
+         ],
+         "pipelineName": "$(system.teamProject)/$(build.definitionName)",
+         "taskExecutionNumber": "$(build.buildId)",
+         "stageName": "$(system.jobDisplayName)",
+         "branchName": "$(build.sourceBranchName)"
+      }
 
-    - task: ServiceNow-DevOps-Server-Change-Acceleration@1
-      inputs:
-        connectedServiceName: "$(connection)"
-        UpstreamJob: 'UAT'
-      condition: true
-
-    - task: InvokeRESTAPI@1
-      inputs:
-        connectionType: 'connectedServiceName'
-        serviceConnection: "$(connection)-generic"
-        method: 'POST'
-        urlSuffix: "/api/devops/orchestration/changeControl?toolId=$(toolId)"
-        body: |
-         {
-            "buildNumber": "$(build.buildId)",
-            "isMultiBranch": "true",
-            "branchName": "$(build.sourceBranchName)"
-         }
-        waitForCompletion: 'true'
 
   - job: "ProdDeployment"
     dependsOn: "Prod"
