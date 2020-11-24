@@ -10,8 +10,9 @@ trigger:
 name: $(BuildDefinitionName).$(BuildID)
 variables:
   System.Debug: true
-  connection: "lrochette1"
-  tooldId: "55fd373f1be314101afa520d0a4bcb2a"
+  connection: "<your SNOW connection>"
+  sshconnection: "<your SSH connection>"
+  tooldId: "<your tool id>"
 
 stages:
 - stage: 'Build'
@@ -45,7 +46,7 @@ stages:
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'corpsite'
+        ArtifactName: 'globex'
         publishLocation: 'Container'
 
     - task: ServiceNow-DevOps-Agent-Artifact-Registration@1
@@ -56,7 +57,7 @@ stages:
                      "artifacts": [
                      {
                          "name": "globex-web.war",
-                         "repositoryName": "corpsite-ADO",
+                         "repositoryName": "globex-ADO",
                          "version": "1.0.$(Build.BuildId)",
                          "semanticVersion": "1.0.$(Build.BuildId)"
                      }]}
@@ -86,17 +87,9 @@ stages:
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: 'corpsite'
+        artifactName: 'globex'
         downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: CopyFilesOverSSH@0
-      inputs:
-        sshEndpoint: 'UAT'
-        sourceFolder: '$(System.ArtifactsDirectory)/corpsite'
-        contents: '*.war'
-        targetFolder: '/opt/tomcat/webapps'
-        overwrite: true
-        preserveTimestamp: true
 
 - stage: 'Prod'
   jobs:
@@ -110,11 +103,11 @@ stages:
         artifactToolIdExists: false
         packageRegistrationPayload: >
           {
-              "name": "CorpsitePackage",
+              "name": "GlobexPackage",
               "artifacts": [
               {
                   "name": "globex-web.war",
-                  "repositoryName": "corpsite-ADO",
+                  "repositoryName": "globex-ADO",
                   "version": "1.0.$(build.buildId)",
                   "pipelineName":"$(system.teamProject)/$(build.definitionName)",
                   "taskExecutionNumber":"$(build.buildId)",
@@ -133,19 +126,6 @@ stages:
         UpstreamJob: 'UAT'
       condition: true
 
-    - task: InvokeRESTAPI@1
-      inputs:
-        connectionType: 'connectedServiceName'
-        serviceConnection: "$(connection)-generic"
-        method: 'POST'
-        urlSuffix: "/api/devops/orchestration/changeControl?toolId=$(toolId)"
-        body: |
-         {
-            "buildNumber": "$(build.buildId)",
-            "isMultiBranch": "true",
-            "branchName": "$(build.sourceBranchName)"
-         }
-        waitForCompletion: 'true'
 
   - job: "ProdDeployment"
     dependsOn: "Prod"
@@ -156,13 +136,13 @@ stages:
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: 'corpsite'
+        artifactName: 'globex'
         downloadPath: '$(System.ArtifactsDirectory)'
 
     - task: CopyFilesOverSSH@0
       inputs:
-        sshEndpoint: 'PROD'
-        sourceFolder: '$(System.ArtifactsDirectory)/corpsite'
+        sshEndpoint: '$(sshconnection)'
+        sourceFolder: '$(System.ArtifactsDirectory)/globex'
         contents: '*.war'
         targetFolder: '/opt/tomcat/webapps'
         overwrite: true
