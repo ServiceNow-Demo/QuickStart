@@ -1,0 +1,160 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+# Add comment
+
+trigger:
+- master
+name: Globex ADO Pipeline
+variables:
+  System.Debug: true
+  connection: "snow_devops"
+  tooldId: "e08d4c2f1b6c6010274fbb751a4bcbe5"
+
+stages:
+- stage: 'Build'
+  jobs:
+
+  - job: 'Build'
+    steps:
+
+    - task: Maven@3
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'package'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFiles: 'target/surefire-reports/TEST-*.xml'
+        testRunTitle: 'Build'
+        condition: succeededOrFailed()
+#        testRunTitle: '$(Agent.OS) - $(Build.BuildNumber)[$(Agent.JobName)] - JUNIT'
+# testRunTitle must match the jobName to have the tests appear in  SN
+
+    - task: CopyFiles@2
+      inputs:
+        sourceFolder: 'target'
+        contents: 'globex-web.war'
+        targetFolder: '$(Build.ArtifactStagingDirectory)'
+        cleanTargetFolder: true
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'globex'
+        publishLocation: 'Container'
+
+    - task: ServiceNow-DevOps-Agent-Artifact-Registration@1
+      inputs:
+        connectedServiceName: "$(connection)"
+        artifactsPayload: |
+          {
+                     "artifacts": [
+                     {
+                         "name": "globex-web.war",
+                         "repositoryName": "globex-ADO",
+                         "version": "1.0.$(Build.BuildId)",
+                         "semanticVersion": "1.0.$(Build.BuildId)"
+                     }]}
+
+- stage: 'Test'
+  jobs:
+  - job: 'Test'
+    steps:
+
+    - task: Maven@3
+      inputs:
+        mavenPomFile: 'pom.xml'
+        goals: 'test'
+        publishJUnitResults: true
+        testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFiles: 'target/surefire-reports/TEST-*.xml'
+        testRunTitle: 'Test'
+        condition: succeededOrFailed()
+- stage: 'UAT'
+  jobs:
+  - job: 'UAT'
+    steps:
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'globex'
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+
+- stage: 'Prod'
+  jobs:
+  - job: 'Prod'
+    pool: server
+    steps:
+
+    - task: ServiceNow-DevOps-Server-Package-Registration@1
+      inputs:
+        connectedServiceName: "$(connection)"
+        artifactToolIdExists: false
+        packageRegistrationPayload: >
+          {
+              "name": "GlobexPackage",
+              "artifacts": [
+              {
+                  "name": "globex-web.war",
+                  "repositoryName": "globex-ADO",
+                  "version": "1.0.$(build.buildId)",
+                  "pipelineName":"$(system.teamProject)/$(build.definitionName)",
+                  "taskExecutionNumber":"$(build.buildId)",
+                  "stageName":"$(system.jobDisplayName)",
+                  "branchName":"$(build.sourceBranchName)"
+              }],
+              "pipelineName":"$(system.teamProject)/$(build.definitionName)",
+              "taskExecutionNumber":"$(build.buildId)",
+              "stageName":"$(system.jobDisplayName)",
+              "branchName":"$(build.sourceBranchName)"
+          }
+- task: ServiceNow-DevOps-Server-Artifact-Registration@1
+  inputs:
+    connectedServiceName: 'snow_devops'
+    artifactRegistrationPayload: |
+      {
+         "artifacts": [
+            {
+               "name": "globex-web.war",
+               "version": "1.$(build.buildId)",
+               "semanticVersion": "1.$(build.buildId).0",
+               "repositoryName": "globex-ADO"
+            }
+         ],
+         "pipelineName": "$(system.teamProject)/$(build.definitionName)",
+         "taskExecutionNumber": "$(build.buildId)",
+         "stageName": "$(system.jobDisplayName)",
+         "branchName": "$(build.sourceBranchName)"
+      }
+
+
+  - job: "ProdDeployment"
+    dependsOn: "Prod"
+    pool: "PROD"
+    steps:
+
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'globex'
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+    - task: CopyFilesOverSSH@0
+      inputs:
+        sshEndpoint: 'globex_tomcat'
+        sourceFolder: '$(System.ArtifactsDirectory)/globex'
+        contents: '*.war'
+        targetFolder: '/opt/tomcat/webapps'
+        overwrite: true
+        preserveTimestamp: true
