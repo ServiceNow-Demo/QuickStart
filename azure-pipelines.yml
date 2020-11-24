@@ -129,7 +129,8 @@ stages:
 
   - job: "ProdDeployment"
     dependsOn: "Prod"
-    pool: "Default"
+    pool: 
+      vmImage: 'ubuntu-latest'
     steps:
 
     - task: DownloadBuildArtifacts@0
