@@ -133,8 +133,6 @@ stages:
          "stageName": "$(system.jobDisplayName)",
          "branchName": "$(build.sourceBranchName)"
       }
-
-
   - job: "ProdDeployment"
     dependsOn: "Prod"
     pool: "PROD"
