@@ -10,9 +10,9 @@ trigger:
 name: $(BuildDefinitionName).$(BuildID)
 variables:
   System.Debug: true
-  connection: "snow_devops"
-  sshconnection: "globex_tomcat"
-  tooldId: "e08d4c2f1b6c6010274fbb751a4bcbe5"
+  connection: "<your servicenow service connection name>"
+  sshconnection: "<your SSH connection name>"
+  tooldId: "<your ServiceNow ADO tool sys_id>"
 
 stages:
 - stage: 'Build'
